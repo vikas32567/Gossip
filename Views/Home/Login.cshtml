@@ -1,0 +1,25 @@
+@model Gossip.Models.LoginRequest
+
+@{
+    TempData["Title"] = "Login";
+}
+
+<div class="row">
+    <div class="col-12 col-md-6 offset-0 offset-md-3">
+        <form asp-action="Login" asp-controller="Home">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <fieldset>
+                <div class="form-group">
+                    <input type="text" asp-for="Name" class="form-group" placeholder="Name" />
+                </div>
+                <div class="form-group">
+                    <input type="text" asp-for="Email" class="form-group" placeholder="Email" />
+                </div>
+
+                <div class="form-group tetx-right">
+                    <button type="submit">Login</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

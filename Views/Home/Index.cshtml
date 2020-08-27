@@ -1,0 +1,46 @@
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Gossip";
+}
+
+<div class="d-none" id="templates">
+    <div class="sentMsg">
+        <div class="badge badge-light"></div>
+        <div class="card border-0 bg-info px-4 py-2 mb-2 text-left text-white"></div>
+    </div>
+    <div class="receivedMsg text-right">
+        <span class="badge badge-info"></span>
+        <div class="card border-0 bg-light px-4 py-2 mb-2"></div>
+    </div>
+</div>
+
+<div class="text-center">
+    <h1 class="display-4">Happy gossiping</h1>
+</div>
+
+<div class="position-absolute w-100 w-md-25" style="right:20px;bottom:80px">
+    <div class="row pt-5">
+        <div class="col-8 offset-2 py-2" id="messagesList"></div>
+        <div class="col-8 offset-2">
+            <fieldset>
+                <div class="form-group">
+                    <label class="form-label" id="userInput">@User.FindFirst(ClaimTypes.Name).Value</label>
+                    <input type="text" class="form-control" placeholder="User" 
+                        value="@User.FindFirst(ClaimTypes.Sid).Value"/>
+                        
+                    <div class="form-inline">
+                        <input type="text" id="groupInput" class="form-control" />
+                        <button id="addGroup" class="btn btn-danger">Group</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea id="messageInput" placeholder="Message" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="form-group text-right">
+                    <div id="sendButton" class="btn btn-info">Send</div>
+                </div>
+
+            </fieldset>
+        </div>
+    </div>
+</div>
