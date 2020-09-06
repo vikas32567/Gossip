@@ -26,7 +26,14 @@ namespace Gossip.Hubs
             
             await Clients.OthersInGroup(groupName).SendAsync("ReceiveMessage", name, message);
 
-            var chatMessage = new ChatMessage(userId, groupName, message);
+            var chatMessage = new ChatMessage();
+            var rand = new Random();
+            chatMessage.PartitionKey = "Gossip Chat";
+            chatMessage.RowKey = rand.Next(10000, 100000).ToString();
+            chatMessage.SenderId = userId;
+            chatMessage.GroupName = groupName;
+            chatMessage.Message = message;
+
             var result = await _client.UploadChatMessage(chatMessage);
 
             if (result)
@@ -43,6 +50,8 @@ namespace Gossip.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
             await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
+
+            await LoadChatHistory(groupName);
         }
 
         public async Task RemoveFromGroup(string groupName)
@@ -50,6 +59,29 @@ namespace Gossip.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
             await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
+        }
+
+        public async Task LoadChatHistory(string groupName)
+        {
+            var chatHistory = _client.LoadHistory(groupName);
+            var userId = Context.User.FindFirst(ClaimTypes.Sid).Value;
+            var name = Context.User.FindFirst(ClaimTypes.Name).Value;
+
+            foreach (var chatMessage in chatHistory)
+            {
+                
+                await Clients
+                        .Client(Context.ConnectionId)
+                        // .Group(groupName)
+                        // .User(userId)
+                        .SendAsync("ReceiveMessage", chatMessage.SenderId, chatMessage.Message);
+            }
+            // foreach (var chatMessage in chatHistory)
+            // {
+            //     await Clients
+            //             .User(name)
+            //             .SendAsync("ReceiveMessage", chatMessage.SenderId, chatMessage.Message);
+            // }
         }
     }
 }
